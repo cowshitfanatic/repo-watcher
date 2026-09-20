@@ -29,7 +29,11 @@ jobs:
         run: python -m release_rat --once
       - name: Persist release memory
         run: |
-          if git diff --quiet -- data/state.json; then
+          if test ! -f data/state.json; then
+            echo "No state file."
+            exit 0
+          fi
+          if git diff --quiet -- data/state.json && git ls-files --error-unmatch data/state.json >/dev/null 2>&1; then
             echo "No state changes."
             exit 0
           fi
