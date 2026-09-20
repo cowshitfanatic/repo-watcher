@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "release-rat",
+  "version": "0.1.0",
+  "description": "Monitor GitHub releases, filter routine changes, summarize worthwhile releases, remember what was reported, and optionally notify Discord.",
+  "repository": "https://github.com/cowshitfanatic/repo-watcher"
+}
