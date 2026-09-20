@@ -31,6 +31,6 @@ jobs:
           fi
           git config user.name "release-rat[bot]"
           git config user.email "release-rat[bot]@users.noreply.github.com"
-          git add data/state.json
+          git add -f data/state.json
           git commit -m "chore: update release rat memory"
           git push
