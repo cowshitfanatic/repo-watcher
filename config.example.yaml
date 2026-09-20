@@ -1,0 +1,49 @@
+repositories:
+  - openai/openai-python
+  - langchain-ai/langgraph
+
+interval_minutes: 60
+max_releases_per_repo: 5
+github:
+  timeout_seconds: 20
+  include_prereleases: false
+
+significance:
+  minimum_score: 3
+  always_signals:
+    - security
+    - breaking
+    - deprecation
+    - migration
+    - major
+    - removed
+  keywords:
+    high:
+      - breaking
+      - security
+      - vulnerability
+      - CVE
+      - deprecation
+      - deprecated
+      - removed
+      - migration
+      - incompatible
+      - major release
+    medium:
+      - feature
+      - support
+      - performance
+      - memory
+      - reliability
+      - API
+      - database
+      - authentication
+      - integration
+
+notifications:
+  discord_webhook: ""
+
+llm:
+  enabled: true
+  model: gpt-5-mini
+  timeout_seconds: 45
