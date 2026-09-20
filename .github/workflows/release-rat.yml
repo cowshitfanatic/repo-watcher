@@ -6,6 +6,12 @@ on:
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
+    inputs:
+      test_notification:
+        description: "Send a real Discord test message instead of running the watcher"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -21,13 +27,47 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Prepare config
         run: test -f config.yaml || cp config.example.yaml config.yaml
+      - name: Test Discord notification
+        if: ${{ inputs.test_notification }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python - <<'PY'
+          import os
+          from release_rat.models import Assessment, Release
+          from release_rat.notifier import Notifier
+
+          webhook = os.environ.get("DISCORD_WEBHOOK_URL", "")
+          if not webhook:
+              raise SystemExit("DISCORD_WEBHOOK_URL is not configured")
+
+          release = Release(
+              repository="release-rat/test",
+              release_id=0,
+              tag_name="v0.0.0-test",
+              name="Discord notification test",
+              body="This is a synthetic Release Rat notification.",
+              html_url="https://github.com/cowshitfanatic/repo-watcher",
+              published_at="",
+          )
+          assessment = Assessment(
+              significant=True,
+              score=999,
+              reason="Manual webhook smoke test.",
+              summary="This is a test message from Release Rat. No release was detected and no state was changed.",
+          )
+          Notifier(webhook=webhook).send(release, assessment)
+          print("Discord test notification sent.")
+          PY
       - name: Run Release Rat
+        if: ${{ !inputs.test_notification }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -m release_rat --once
       - name: Persist release memory
+        if: ${{ !inputs.test_notification }}
         run: |
           if test ! -f data/state.json; then
             echo "No state file."
