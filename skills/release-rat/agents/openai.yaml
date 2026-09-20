@@ -1,0 +1,7 @@
+interface:
+  display_name: "Release Rat"
+  short_description: "Find meaningful GitHub releases and summarize what changed."
+  default_prompt: "Check my configured repositories for worthwhile new releases and summarize anything worth my attention."
+
+policy:
+  allow_implicit_invocation: true
